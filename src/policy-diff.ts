@@ -158,7 +158,14 @@ function scalar(
   after: bigint | boolean,
 ): void {
   if (before !== after)
-    changes.push({ field, path: field, kind: "changed", direction: scalarDirection(field, before, after), before, after });
+    changes.push({
+      field,
+      path: field,
+      kind: "changed",
+      direction: scalarDirection(field, before, after),
+      before,
+      after,
+    });
 }
 
 /** Set difference of two string lists, reported with indices into each side. */
@@ -180,7 +187,13 @@ function setDiff(
     if (seenBefore.has(key)) return;
     seenBefore.add(key);
     if (!inAfter.has(key)) {
-      changes.push({ field, path: `${path}[${index}]`, kind: "removed", direction: removedDirection, before: value });
+      changes.push({
+        field,
+        path: `${path}[${index}]`,
+        kind: "removed",
+        direction: removedDirection,
+        before: value,
+      });
     }
   });
   const seenAfter = new Set<string>();
@@ -189,7 +202,13 @@ function setDiff(
     if (seenAfter.has(key)) return;
     seenAfter.add(key);
     if (!inBefore.has(key)) {
-      changes.push({ field, path: `${path}[${index}]`, kind: "added", direction: addedDirection, after: value });
+      changes.push({
+        field,
+        path: `${path}[${index}]`,
+        kind: "added",
+        direction: addedDirection,
+        after: value,
+      });
     }
   });
 }

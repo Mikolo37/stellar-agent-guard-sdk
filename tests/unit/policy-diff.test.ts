@@ -80,19 +80,45 @@ describe("policyDiff", () => {
 
   it("reports a scalar change", () => {
     assert.deepEqual(policyDiff(policy(), policy({ per_tx_cap: 2000n })), [
-      { field: "per_tx_cap", path: "per_tx_cap", kind: "changed", direction: "widening", before: 1000n, after: 2000n },
+      {
+        field: "per_tx_cap",
+        path: "per_tx_cap",
+        kind: "changed",
+        direction: "widening",
+        before: 1000n,
+        after: 2000n,
+      },
     ] satisfies PolicyChange[]);
     assert.deepEqual(policyDiff(policy(), policy({ paused: true })), [
-      { field: "paused", path: "paused", kind: "changed", direction: "narrowing", before: false, after: true },
+      {
+        field: "paused",
+        path: "paused",
+        kind: "changed",
+        direction: "narrowing",
+        before: false,
+        after: true,
+      },
     ] satisfies PolicyChange[]);
   });
 
   it("reports list removal (index into a) and addition (index into b)", () => {
     assert.deepEqual(policyDiff(policy(), policy({ recipients: [R1, R3] })), [
-      { field: "recipients", path: "recipients[1]", kind: "removed", direction: "narrowing", before: R2 },
+      {
+        field: "recipients",
+        path: "recipients[1]",
+        kind: "removed",
+        direction: "narrowing",
+        before: R2,
+      },
     ] satisfies PolicyChange[]);
     assert.deepEqual(policyDiff(policy({ recipients: [R1] }), policy({ recipients: [R1, R2] })), [
-      { field: "recipients", path: "recipients[1]", kind: "added", direction: "widening", after: R2 },
+      {
+        field: "recipients",
+        path: "recipients[1]",
+        kind: "added",
+        direction: "widening",
+        after: R2,
+      },
     ] satisfies PolicyChange[]);
   });
 
@@ -108,8 +134,20 @@ describe("policyDiff", () => {
     assert.deepEqual(
       policyDiff(policy({ recipients: [R1, R2] }), policy({ recipients: [R3, R1] })),
       [
-        { field: "recipients", path: "recipients[1]", kind: "removed", direction: "narrowing", before: R2 },
-        { field: "recipients", path: "recipients[0]", kind: "added", direction: "widening", after: R3 },
+        {
+          field: "recipients",
+          path: "recipients[1]",
+          kind: "removed",
+          direction: "narrowing",
+          before: R2,
+        },
+        {
+          field: "recipients",
+          path: "recipients[0]",
+          kind: "added",
+          direction: "widening",
+          after: R3,
+        },
       ] satisfies PolicyChange[],
     );
   });
@@ -117,8 +155,20 @@ describe("policyDiff", () => {
   it("reports nested protocol fn-list changes with indexed paths", () => {
     const b = policy({ protocols: [{ contract: DEX, fns: ["swap", "withdraw"] }] });
     assert.deepEqual(policyDiff(policy(), b), [
-      { field: "protocols", path: "protocols[0].fns[1]", kind: "removed", direction: "narrowing", before: "deposit" },
-      { field: "protocols", path: "protocols[0].fns[1]", kind: "added", direction: "widening", after: "withdraw" },
+      {
+        field: "protocols",
+        path: "protocols[0].fns[1]",
+        kind: "removed",
+        direction: "narrowing",
+        before: "deposit",
+      },
+      {
+        field: "protocols",
+        path: "protocols[0].fns[1]",
+        kind: "added",
+        direction: "widening",
+        after: "withdraw",
+      },
     ] satisfies PolicyChange[]);
   });
 
@@ -139,8 +189,20 @@ describe("policyDiff", () => {
   it("matches protocols by contract and reports whole-rule add/remove", () => {
     const b = policy({ protocols: [{ contract: TOKEN, fns: null }] });
     assert.deepEqual(policyDiff(policy(), b), [
-      { field: "protocols", path: "protocols[0]", kind: "removed", direction: "narrowing", before: DEX },
-      { field: "protocols", path: "protocols[0]", kind: "added", direction: "widening", after: TOKEN },
+      {
+        field: "protocols",
+        path: "protocols[0]",
+        kind: "removed",
+        direction: "narrowing",
+        before: DEX,
+      },
+      {
+        field: "protocols",
+        path: "protocols[0]",
+        kind: "added",
+        direction: "widening",
+        after: TOKEN,
+      },
     ] satisfies PolicyChange[]);
   });
 
@@ -186,7 +248,13 @@ describe("policyDiff", () => {
   it("treats an absent optional list as empty", () => {
     assert.deepEqual(policyDiff(policy(), policy({ blocked_recipients: [] })), []);
     assert.deepEqual(policyDiff(policy(), policy({ blocked_recipients: [R2] })), [
-      { field: "blocked_recipients", path: "blocked_recipients[0]", kind: "added", direction: "narrowing", after: R2 },
+      {
+        field: "blocked_recipients",
+        path: "blocked_recipients[0]",
+        kind: "added",
+        direction: "narrowing",
+        after: R2,
+      },
     ] satisfies PolicyChange[]);
   });
 
@@ -218,9 +286,27 @@ describe("policyDiff", () => {
         policy({ assets: [], recipients: [], protocols: [], recipient_window_caps: [] }),
       ),
       [
-        { field: "assets", path: "assets[0]", kind: "removed", direction: "narrowing", before: TOKEN },
-        { field: "protocols", path: "protocols[0]", kind: "removed", direction: "narrowing", before: DEX },
-        { field: "recipients", path: "recipients[0]", kind: "removed", direction: "narrowing", before: R1 },
+        {
+          field: "assets",
+          path: "assets[0]",
+          kind: "removed",
+          direction: "narrowing",
+          before: TOKEN,
+        },
+        {
+          field: "protocols",
+          path: "protocols[0]",
+          kind: "removed",
+          direction: "narrowing",
+          before: DEX,
+        },
+        {
+          field: "recipients",
+          path: "recipients[0]",
+          kind: "removed",
+          direction: "narrowing",
+          before: R1,
+        },
         {
           field: "recipient_window_caps",
           path: "recipient_window_caps[0]",
@@ -239,8 +325,20 @@ describe("policyDiff", () => {
         policy({ recipients: ["NOT-AN-ADDRESS" as AccountAddress] }),
       ),
       [
-        { field: "recipients", path: "recipients[0]", kind: "removed", direction: "narrowing", before: "not-an-address" },
-        { field: "recipients", path: "recipients[0]", kind: "added", direction: "widening", after: "NOT-AN-ADDRESS" },
+        {
+          field: "recipients",
+          path: "recipients[0]",
+          kind: "removed",
+          direction: "narrowing",
+          before: "not-an-address",
+        },
+        {
+          field: "recipients",
+          path: "recipients[0]",
+          kind: "added",
+          direction: "widening",
+          after: "NOT-AN-ADDRESS",
+        },
       ] satisfies PolicyChange[],
     );
   });
@@ -344,7 +442,10 @@ describe("policyDiff", () => {
     it("adding active_until expiry is narrowing; removing is widening", () => {
       const addExpiry = policyDiff(policy({ active_until: 0n }), policy({ active_until: 9999n }));
       assert.equal(addExpiry[0]?.direction, "narrowing");
-      const removeExpiry = policyDiff(policy({ active_until: 9999n }), policy({ active_until: 0n }));
+      const removeExpiry = policyDiff(
+        policy({ active_until: 9999n }),
+        policy({ active_until: 0n }),
+      );
       assert.equal(removeExpiry[0]?.direction, "widening");
     });
 
@@ -363,9 +464,15 @@ describe("policyDiff", () => {
     });
 
     it("recipient_window_caps: entry added is narrowing, removed is widening", () => {
-      const add = policyDiff(policy(), policy({ recipient_window_caps: [{ recipient: R1, cap: 10n }] }));
+      const add = policyDiff(
+        policy(),
+        policy({ recipient_window_caps: [{ recipient: R1, cap: 10n }] }),
+      );
       assert.equal(add[0]?.direction, "narrowing");
-      const remove = policyDiff(policy({ recipient_window_caps: [{ recipient: R1, cap: 10n }] }), policy());
+      const remove = policyDiff(
+        policy({ recipient_window_caps: [{ recipient: R1, cap: 10n }] }),
+        policy(),
+      );
       assert.equal(remove[0]?.direction, "widening");
     });
   });
@@ -387,7 +494,10 @@ describe("policyDiff", () => {
     });
 
     it("renders additions with + and removals with -", () => {
-      const changes = policyDiff(policy({ recipients: [R1, R2] }), policy({ recipients: [R3, R1] }));
+      const changes = policyDiff(
+        policy({ recipients: [R1, R2] }),
+        policy({ recipients: [R3, R1] }),
+      );
       const out = formatPolicyDiff(changes);
       assert.ok(out.includes("  - "), `expected removal line, got:\n${out}`);
       assert.ok(out.includes("  + "), `expected addition line, got:\n${out}`);
@@ -415,7 +525,9 @@ describe("policyDiff", () => {
     });
 
     it("renders full addresses by default", () => {
-      const out = formatPolicyDiff(policyDiff(policy({ recipients: [R1, R2] }), policy({ recipients: [R3, R1] })));
+      const out = formatPolicyDiff(
+        policyDiff(policy({ recipients: [R1, R2] }), policy({ recipients: [R3, R1] })),
+      );
       assert.ok(out.includes(R2), `expected full R2 address, got:\n${out}`);
       assert.ok(out.includes(R3), `expected full R3 address, got:\n${out}`);
     });

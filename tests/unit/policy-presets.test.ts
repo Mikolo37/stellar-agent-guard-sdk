@@ -45,7 +45,12 @@ function loadFixture(): Map<string, FixturePreset> {
   return new Map(raw.presets.map((p) => [p.name, p]));
 }
 
-const PRESET_NAMES: PolicyPresetName[] = ["day-trader", "payments-bot", "watch-only", "max-security"];
+const PRESET_NAMES: PolicyPresetName[] = [
+  "day-trader",
+  "payments-bot",
+  "watch-only",
+  "max-security",
+];
 
 describe("POLICY_PRESETS", () => {
   it("is exported from the package root", () => {

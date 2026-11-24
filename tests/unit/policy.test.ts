@@ -2381,17 +2381,23 @@ describe("policyHash (issue #437)", () => {
 
   it("same policy with two different guard addresses produces different hashes", () => {
     const p = freezePolicy(samplePolicy());
-    const GUARD2 = unsafeContractAddress("CBVR6W5NX5ZQWCCAEKIQLMWCNLWTK7EQJLNNHP44LKFHQ2FY7BPQQFCM");
+    const GUARD2 = unsafeContractAddress(
+      "CBVR6W5NX5ZQWCCAEKIQLMWCNLWTK7EQJLNNHP44LKFHQ2FY7BPQQFCM",
+    );
     assert.notEqual(policyHash(p, GUARD), policyHash(p, GUARD2));
   });
 
   it("permuting protocol fns does not change the hash", () => {
-    const a = freezePolicy(samplePolicy({
-      protocols: [{ contract: TOKEN, fns: ["swap", "deposit"] }],
-    }));
-    const b = freezePolicy(samplePolicy({
-      protocols: [{ contract: TOKEN, fns: ["deposit", "swap"] }],
-    }));
+    const a = freezePolicy(
+      samplePolicy({
+        protocols: [{ contract: TOKEN, fns: ["swap", "deposit"] }],
+      }),
+    );
+    const b = freezePolicy(
+      samplePolicy({
+        protocols: [{ contract: TOKEN, fns: ["deposit", "swap"] }],
+      }),
+    );
     assert.equal(policyHash(a), policyHash(b));
   });
 
