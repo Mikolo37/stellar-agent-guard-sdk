@@ -84,7 +84,6 @@ export {
   isStrKeyAddress,
   policyAddressComparisonKey,
   policyFromScVal,
-  policyHash,
   policyToScVal,
   readPersistentEntry,
   unsafeAccountAddress,
@@ -94,6 +93,8 @@ export {
   validateGuardPolicy,
   validatePolicyForEncoding,
 } from "./policy.ts";
+
+export { policyHash } from "./policy-hash.ts";
 
 export type { ActiveWindowState, DescribePolicyOptions } from "./policy.ts";
 

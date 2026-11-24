@@ -14,6 +14,7 @@ import { describe, it } from "node:test";
 import { Address, nativeToScVal, scValToNative, StrKey, xdr } from "@stellar/stellar-sdk";
 import { mulberry32, randomUint } from "./seeded-random.ts";
 import { PolicyDecodeError, PolicyEncodeError } from "../../src/errors.ts";
+import { policyHash } from "../../src/policy-hash.ts";
 import { POLICY_JSON_VERSION, policyFromJson, policyToJson } from "../../src/policy-json.ts";
 import type { CheckResult } from "../../src/policy.ts";
 import {
@@ -31,7 +32,6 @@ import {
   validateGuardPolicy,
   validatePolicyForEncoding,
   freezePolicy,
-  policyHash,
   unsafeContractAddress,
   unsafeAccountAddress,
   unsafePublicKeyHex,
